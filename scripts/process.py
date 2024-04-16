@@ -5,34 +5,33 @@ Process dataset files
 
 __author__ = "Greg and Nick"
 
-# import csv
+from pathlib import Path
 import pandas as pd
 
 def main():
-    #with open("../data/listings.csv", "r") as f:
-    #    reader = csv.reader(f)
-    #    for row in reader:
-    #        print(row)
-    #        quit()
-    listings_data = pd.read_csv("../data/listings.csv")
+    # Get path to source listings file
+    listing_path = Path.cwd()
+    if (listing_path / "scripts").exists():  # We are likely in one of two folders so we figure out which one and then traverse to the right dir
+        listing_path = listing_path / "data" / "listings.csv"
+    else:
+        listing_path = listing_path.parent / "data" / "listings.csv"
+    
 
+    listings_data = pd.read_csv(listing_path)
     
     for id, row in listings_data.iterrows():
         row = row.copy()
+        
+        # In general, exclude rows that are missing important values
+        # (This shows up with float nans instead of their expected value)
 
         # Get bathrooms from bathrooms_text
-        if(type(row['bathrooms_text']) == str and row['bathrooms_text'] != "nan" and row['bathrooms_text'][0].isdigit()):
-            #row['bathrooms'] = row['bathrooms_text'].split(" ")[0]
+        if isinstance(row['bathrooms_text'], str) and row['bathrooms_text'][0].isdigit():
             listings_data.loc[id, 'bathrooms'] = float(row['bathrooms_text'].split(" ")[0])
 
         # Convert price from string with $ prefix to float
-        if(type(row['price']) == str and row['price'][0] == "$"):
-            #print(row['price'])
+        if isinstance(row['price'], str):  # After testing, price always starts with $
             listings_data.loc[id, 'price'] = float(row['price'].replace("$", "").replace(",", ""))
-            #print(row['price'])
-        else:
-            #print("Price", row['price'], " is not a string with $ prefix")
-            pass
             
     filtered_listings_data = listings_data[[
         "id", "host_id", "host_since", "host_location", "host_response_time", "host_response_rate",
@@ -48,15 +47,19 @@ def main():
         "calculated_host_listings_count_private_rooms", "calculated_host_listings_count_shared_rooms",
         "reviews_per_month"
     ]]
-    filtered_listings_data.to_csv("../data/processed/filtered_listings.csv", index=False)
-    filtered_listings_data.to_json("../data/processed/filtered_listings.json", orient="records")
 
-    # Revies and price
+    processed_path = listing_path.parent / "processed"
+    processed_path.mkdir(exist_ok=True)  # Create if missing
+
+    filtered_listings_data.to_csv(processed_path / "filtered_listings.csv", index=False)
+    filtered_listings_data.to_json(processed_path / "filtered_listings.json", orient="records")
+
+    # Review count and price only
     filtered_listings_data_reviews_price = listings_data[[
         "id", "number_of_reviews", "price"
     ]]
-    filtered_listings_data_reviews_price.to_csv("../data/processed/reviews_price.csv", index=False)
-    filtered_listings_data_reviews_price.to_json("../data/processed/reviews_price.json", orient="records")
+    filtered_listings_data_reviews_price.to_csv(processed_path / "reviews_price.csv", index=False)
+    filtered_listings_data_reviews_price.to_json(processed_path / "reviews_price.json", orient="records")
 
 
 if __name__ == "__main__":
