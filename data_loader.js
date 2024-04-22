@@ -1,20 +1,27 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 // List of columns to use; This list is used for iterating over the data when parsing
-export const order = ["price", "number_of_reviews"];
+export const order = ["price", "number_of_reviews", "neighbourhood_cleansed"];
 export let dataColumns = {};
 export let data = [];
 
 // Store calculated column metadata
 export class ColumnInfo {
     constructor(name, type) {
+        // Numeric
         this.name = name;
         this.type = type;
         this.min;
         this.max;
+        this.avg;
         this.clean_min;
         this.clean_max;
+        this.clean_avg;
         this.domain;
+
+        // Categorical
+        this.fields = []
+
         this.data = [];
     }
 
@@ -26,10 +33,12 @@ for (let col of order) {
         dataColumns[col] = new ColumnInfo(col, "numeric");
     } else if (col == "number_of_reviews") {
         dataColumns[col] = new ColumnInfo(col, "numeric");
+    } else if (col == "neighbourhood_cleansed") {
+        dataColumns[col] = new ColumnInfo(col, "categorical");
     }
 }
 
-export function calcExtrema() {
+export function calcStats() {
     for (let col of order) {
         if (dataColumns[col].type == "numeric") {
             console.log(col)
@@ -38,6 +47,7 @@ export function calcExtrema() {
                 .toSorted((a, b) => a - b);  // We may be wasting resoures making 2 copies?
             dataColumns[col].min = temp[0];
             dataColumns[col].max = temp[temp.length - 1];
+            dataColumns[col].avg = temp.reduce((a, b) => a + b) / temp.length;
 
             // Use IQR to remove outliers
             // (Find range between 25% and 75% and then use that distance to decide on how much farther is considered an outlier)
@@ -52,6 +62,12 @@ export function calcExtrema() {
 
             dataColumns[col].clean_min = Math.min(...temp.filter(d => d >= lower_bound));
             dataColumns[col].clean_max = Math.max(...temp.filter(d => d <= upper_bound));
+
+            dataColumns[col].clean_avg = temp.filter(d => d >= lower_bound && d <= upper_bound).reduce((a, b) => a + b) / temp.length;
+        } else if (dataColumns[col].type == "categorical") {
+            let temp = dataColumns[col].data
+                .filter(d => d != null && d != undefined && d != NaN);
+            dataColumns[col].fields = temp.filter((d, i) => temp.indexOf(d) == i);
         }
     }
 }
@@ -89,7 +105,7 @@ export function loadJsonData(path, callback) {
             }
             
             // Do our processing and set domains
-            calcExtrema();
+            calcStats();
             normalDomain();
 
             // Call the callback to run main code
