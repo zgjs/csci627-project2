@@ -14,7 +14,7 @@ const mtop = 10,
 const root = document.getElementById("scatter_plot");
 
 // Put an svg element in the root
-const svg = d3.select(root)
+const scatterSvg = d3.select(root)
     .append("svg")
     .attr("width", width + mleft + mright)
     .attr("height", height + mtop + mbottom)
@@ -52,7 +52,7 @@ function draw() {
     .range([height, 0]);
     
     // Create axis elements
-    svg.append("g")
+    scatterSvg.append("g")
     .attr("transform", `translate(0, ${height})`)
     .call(d3.axisBottom(x_axis))
     .append("text")
@@ -63,7 +63,7 @@ function draw() {
     .attr("font-size", "12px")
     .text(x_axis_text);
     
-    svg.append("g")
+    scatterSvg.append("g")
     .call(d3.axisLeft(y_axis))
     .append("text")
     .attr("fill", "#000")
@@ -74,7 +74,7 @@ function draw() {
     .attr("font-size", "12px")
     .text(y_axis_text);
     
-    svg.append("g")
+    scatterSvg.append("g")
     .selectAll("dot")
     .data(dl.data.filter(d => d.price != undefined))
     .join("circle")
