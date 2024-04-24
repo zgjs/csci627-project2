@@ -33,7 +33,7 @@ def main():
         if isinstance(row['price'], str):  # After testing, price always starts with $
             listings_data.loc[id, 'price'] = float(row['price'].replace("$", "").replace(",", ""))
             
-    filtered_listings_data = listings_data[[
+    data_fields = [
         "id", "host_id", "host_since", "host_location", "host_response_time", "host_response_rate",
         "host_acceptance_rate", "host_is_superhost", "host_neighbourhood", "host_listings_count",
         "host_total_listings_count", "host_verifications", "host_has_profile_pic", "host_identity_verified",
@@ -46,7 +46,24 @@ def main():
         "instant_bookable", "calculated_host_listings_count", "calculated_host_listings_count_entire_homes",
         "calculated_host_listings_count_private_rooms", "calculated_host_listings_count_shared_rooms",
         "reviews_per_month"
-    ]]
+    ]
+
+    filter_fields = [
+        "id", "host_id", "host_since", "host_response_rate",
+        "host_acceptance_rate", "host_is_superhost", "host_neighbourhood", "host_listings_count",
+        "host_total_listings_count", "host_has_profile_pic", "host_identity_verified",
+        "neighbourhood_cleansed", "latitude", "longitude", "accommodates", "bathrooms", "beds", "price",
+        "minimum_nights", "maximum_nights", "minimum_nights_avg_ntm", "maximum_nights_avg_ntm",
+        "has_availability",
+        "number_of_reviews", "number_of_reviews_ltm", "number_of_reviews_l30d", "first_review",
+        "last_review", "review_scores_rating", "review_scores_accuracy", "review_scores_cleanliness",
+        "review_scores_checkin", "review_scores_communication", "review_scores_location", "review_scores_value",
+        "instant_bookable", "calculated_host_listings_count", "calculated_host_listings_count_entire_homes",
+        "calculated_host_listings_count_private_rooms", "calculated_host_listings_count_shared_rooms",
+        "reviews_per_month"
+    ]
+
+    filtered_listings_data = listings_data[filter_fields]
 
     processed_path = listing_path.parent / "processed"
     processed_path.mkdir(exist_ok=True)  # Create if missing
@@ -61,6 +78,12 @@ def main():
     filtered_listings_data_reviews_price.to_csv(processed_path / "reviews_price.csv", index=False)
     filtered_listings_data_reviews_price.to_json(processed_path / "reviews_price.json", orient="records")
 
+    # Scatter plot fields
+    filtered_listings_scatter_plot = listings_data[[
+        "number_of_reviews", "price"
+    ]]
+    filtered_listings_scatter_plot.to_csv(processed_path / "scatter_plot.csv", index=False)
+    filtered_listings_scatter_plot.to_json(processed_path / "scatter_plot.json", orient="records")
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
