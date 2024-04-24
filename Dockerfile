@@ -9,13 +9,12 @@ RUN wget -O - \
 WORKDIR /scripts
 COPY scripts .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN python process.py \
- && gzip --keep -9 /data/processed/*
+RUN python process.py
 
 FROM nginx:stable-bullseye
 COPY . /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=preprocessor /data/processed /usr/share/nginx/html/data/processed
 RUN find /usr/share/nginx/html/ -maxdepth 2 -type f \
-    \( -iname '*.css' -o -iname '*.html' -o -iname '*.js' -o -iname '*.*json' \) \
-    -exec gzip --keep -9 {} \;
+    \( -iname '*.css' -o -iname '*.csv' -o -iname '*.html' -o -iname '*.js' -o -iname '*.*json' \) \
+    -exec gzip --force --keep -9 {} \;
