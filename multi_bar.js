@@ -25,6 +25,8 @@ let chosenDataColumns = ["price", "number_of_reviews"];
 let chosenLocationColumns = ["West Englewood", "Washington Heights"];
 
 // Calculate the average price per neighbourhood
+let realscores = {};
+let realcounts = {};
 let scores = {};
 let counts = {};
 
@@ -57,11 +59,10 @@ function updateGraph() {
         .selectAll()
         .data(chosenDataColumns) 
         .join("rect")
-            // .attr("x", (k) => {console.log(k); return x(k)})
             .attr("x", (d, i, e) => {console.log(d, ": ", i, ", ", e); return x(d)})
-            .attr("y", (d, i, e) => y(scores[e[0].parentElement.getAttribute("loc")]) + mtop)
+            .attr("y", (d, i, e) => y(scores[e[0].parentElement.getAttribute("loc")][d]) + mtop)
             .attr("width", x.bandwidth())
-            .attr("height", (d, i, e) => y(0) - y(scores[e[0].parentElement.getAttribute("loc")]) - mtop)
+            .attr("height", (d, i, e) => y(0) - y(scores[e[0].parentElement.getAttribute("loc")][d]) - mtop)
             .attr("fill", "steelblue")
             .attr("class", "single_bar")
             .attr("data", d => d);
@@ -98,7 +99,8 @@ function updateGraph() {
             tooltip.style("visibility", "visible");
             let dataName = e.target.getAttribute("data");
             let locName = e.target.parentElement.getAttribute("loc");
-            tooltip.node().innerHTML = "<h3>" + locName + "(" + dataName + ")</h3><p>Average: " + Math.round(scores[locName] * 100) / 100,  + "</p>";
+            tooltip.node().innerHTML = "<h3>" + locName + "(" + dataName + ")</h3><p>Relative Average: " + Math.round(scores[locName][dataName] * 100) / 100 + "</p><p>Absolute Average: " 
+                + Math.round(realscores[locName][dataName] * 100) / 100 + "</p>";
         })
         .on("mouseout", (e) => {
             tooltip.style("visibility", "hidden");
@@ -111,25 +113,51 @@ function updateGraph() {
 dl.loadJsonData("./data/processed/filtered_listings.json", () => {
 
     // Evaluate averages on location
+    // Commonly used columns
+    let numericColumns = dl.order.filter(d => dl.dataColumns[d].type == "numeric");
+    // Set up the objects for storing data
     for (let n of dl.dataColumns["neighbourhood_cleansed"].fields) {
-        scores[n] = 0;
-        counts[n] = 0;
+        realscores[n] = {};
+        realcounts[n] = {};
+        scores[n] = {};
+        counts[n] = {};
+        for (let d of numericColumns) {
+            realscores[n][d] = 0;
+            realcounts[n][d] = 0;
+            scores[n][d] = 0;
+            counts[n][d] = 0;
+        }
     }
 
-    for (let d of dl.data.filter(d => d.price != undefined && d.price != NaN && d.price < 5000)) {
-        scores[d.neighbourhood_cleansed] += d.price;
-        counts[d.neighbourhood_cleansed] += 1;
+    // Add up all values
+    for (let d of dl.data) {
+        for (let col of numericColumns) {
+            if (d[col] != undefined && d[col] != NaN && d[col] <= dl.dataColumns[col].clean_max && d[col] >= dl.dataColumns[col].clean_min) {
+                realscores[d.neighbourhood_cleansed][col] += d[col];
+                realcounts[d.neighbourhood_cleansed][col] += 1;
+            }
+        }
     }
 
+    // Calculate averages for each value
     for (let n of dl.dataColumns["neighbourhood_cleansed"].fields) {
-        scores[n] /= counts[n];
+        for (let d of numericColumns) {
+            realscores[n][d] = realscores[n][d] / realcounts[n][d];
+        }
     }
 
-    let largest = d3.max(Object.values(scores));
-    for (let n of dl.dataColumns["neighbourhood_cleansed"].fields) {
-        scores[n] /= largest;
+    // Calculate and store relative scores
+    for (let d of numericColumns) {
+        let largest = 0;
+        for (let n of dl.dataColumns["neighbourhood_cleansed"].fields) {
+            largest = Math.max(realscores[n][d], largest);
+        }
+        
+        for (let n of dl.dataColumns["neighbourhood_cleansed"].fields) {
+            scores[n][d] = realscores[n][d] / largest;
+        }
     }
-    
+
     let dataOptsList = d3.select("#multi_bar")
         .append("div")
             .style("margin", "20px")

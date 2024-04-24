@@ -124,6 +124,7 @@ dl.loadJsonData("./data/processed/filtered_listings.json", () => {
                 .style("background-color", "white")
                 .style("border", "1px solid black")
                 .style("padding", "5px")
+                .style("visibility", "hidden")
                 .text("tooltip");
             
             d3.selectAll(".county")
