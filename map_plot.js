@@ -46,7 +46,7 @@ function renderMap(data) {
 // Load data and map
 dl.loadJsonData("./data/processed/filtered_listings.json", () => {
     fetch("./data/neighbourhoods.geojson")
-        .then(response => {response.json()} )
+        .then(response => { return response.json()} )
         .then(data => {
             renderMap(data.features);
             
