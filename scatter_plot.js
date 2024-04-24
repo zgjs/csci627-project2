@@ -19,18 +19,7 @@ const scatterSvg = d3.select(root)
     .attr("width", width + mleft + mright)
     .attr("height", height + mtop + mbottom)
     .append("g")
-        .attr("transform", `translate(${mleft}, ${mtop})`);
-
-// Create the dropdowns to change the axis
-const x_axis_menu = document.createElement("select");
-const y_axis_menu = document.createElement("select");
-const color_menu = document.createElement("select");
-
-root.appendChild(document.createElement("br"));
-root.appendChild(x_axis_menu);
-root.appendChild(y_axis_menu);
-root.appendChild(color_menu);
-
+    .attr("transform", `translate(${mleft}, ${mtop})`);
 
 
 function draw() {
