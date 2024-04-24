@@ -1,7 +1,20 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 // List of columns to use; This list is used for iterating over the data when parsing
-export const order = ["price", "number_of_reviews", "neighbourhood_cleansed"];
+export const order = [
+    "accommodates",
+    "bathrooms",
+    "beds",
+    "calculated_host_listings_count",
+    "latitude",
+    "longitude",
+    "neighbourhood_cleansed",
+    "number_of_reviews",
+    "minimum_nights",
+    "price",
+    "reviews_per_month",
+    "review_scores_rating"
+];
 export let dataColumns = {};
 export let data = [];
 
@@ -29,12 +42,24 @@ export class ColumnInfo {
 
 // Hard code these
 for (let col of order) {
-    if (col == "price") {
-        dataColumns[col] = new ColumnInfo(col, "numeric");
-    } else if (col == "number_of_reviews") {
-        dataColumns[col] = new ColumnInfo(col, "numeric");
-    } else if (col == "neighbourhood_cleansed") {
-        dataColumns[col] = new ColumnInfo(col, "categorical");
+    switch (col) {
+        case "accommodates":
+        case "bathrooms":
+        case "beds":
+        case "calculated_host_listings_count":
+        case "latitude":
+        case "longitude":
+        case "number_of_reviews":
+        case "minimum_nights":
+        case "price":
+        case "reviews_per_month":
+        case "review_scores_rating":
+            dataColumns[col] = new ColumnInfo(col, "numeric"); break;
+        case "neighbourhood_cleansed":
+            dataColumns[col] = new ColumnInfo(col, "categorical"); break;
+        default:
+            // Handle any other cases here
+            dataColumns[col] = new ColumnInfo(col, "categorical"); break;
     }
 }
 

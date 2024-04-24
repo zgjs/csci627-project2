@@ -11,10 +11,48 @@
     <div id="scatter_plot"></div>
     <script type="module" src="scatter_plot.js"></script>
     <br>
-    <div id="map"></div>
-    <!-- <script type="module" src="map_plot.js"></script>  -->
+    <form id="scatterplotform" name="scatterplotform">
+        <label for="x_axis">X-axis:</label>
+        <select name="x_axis" id="x_axis">
+            <option value="price">Price</option>
+            <option value="accommodates">Accommodates</option>
+            <option value="bathrooms">Bathrooms</option>
+            <option value="beds">Beds</option>
+            <option value="calculated_host_listings_count">Host Listings Count</option>
+            <option value="latitude">Latitude</option>
+            <option value="longitude">Longitude</option>
+            <option value="minimum_nights">Minimum Nights</option>
+            <option value="number_of_reviews">Number of Reviews</option>
+            <option value="review_scores_rating">Review Scores Rating</option>
+            <option value="reviews_per_month">Reviews per Month</option>
+        </select>
+        <label for="y_axis">Y-axis:</label>
+        <select name="y_axis" id="y_axis">
+            <option value="price">Price</option>
+            <option value="accommodates">Accommodates</option>
+            <option value="bathrooms">Bathrooms</option>
+            <option value="beds">Beds</option>
+            <option value="calculated_host_listings_count">Host Listings Count</option>
+            <option value="latitude">Latitude</option>
+            <option value="longitude">Longitude</option>
+            <option value="minimum_nights">Minimum Nights</option>
+            <option value="number_of_reviews">Number of Reviews</option>
+            <option value="review_scores_rating">Review Scores Rating</option>
+            <option value="reviews_per_month">Reviews per Month</option>
+        </select>
+        <!-- <label for="color_attribute">Color Attribute:</label>
+        <select name="color_attribute" id="color_attribute">
+            <option value="price">Price</option>
+            <option value="number_of_reviews">Number of Reviews</option>
+            <option value="reviews_per_month">Reviews per Month</option>
+            <option value="review_scores_rating">Review Scores Rating</option>
+        </select> -->
+        <input type="submit" value="Redraw">
+    </form>
+    <!-- <div id="map"></div>
+    <script type="module" src="map_plot.js"></script> 
 
-    <div id="bar_chart"></div>
+    <div id="bar_chart"></div> -->
     
 </body>
 </html>
