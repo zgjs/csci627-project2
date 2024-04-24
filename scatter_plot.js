@@ -39,7 +39,7 @@ function draw() {
     dl.cleanDomain();
     
     // let rotatedData = rotateData(data);
-    console.log(dl.dataColumns);
+    //console.log(dl.dataColumns);
     
     const x_axis_text = "price"
     const y_axis_text = "number_of_reviews"

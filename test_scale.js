@@ -36,7 +36,7 @@ function map(data) {
         .attr("class", "country")
         .attr("stroke", "black")
         .attr("fill", "white");
-    console.log(data);
+    //console.log(data);
 }
 
 

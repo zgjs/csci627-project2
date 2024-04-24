@@ -66,7 +66,7 @@ for (let col of order) {
 export function calcStats() {
     for (let col of order) {
         if (dataColumns[col].type == "numeric") {
-            console.log(col)
+            // console.log(col)
             let temp = dataColumns[col].data  // Create a sorted copy for analysis
                 .filter(d => d != null && d != undefined && d != NaN)
                 .toSorted((a, b) => a - b);  // We may be wasting resoures making 2 copies?
