@@ -40,18 +40,8 @@ python -m http.server
 ```
 Open [http://localhost:8000/](http://localhost:8000/) in your browser.
 
-### Option 5: Run manually without a web server (not recommended)
-The instructions assume that you already have python3 and pip3 installed.
-```console
-git clone https://github.com/zgjs/csci627-project2.git
-cd csci627-project2
-# post processing using python
-python -m venv .venv && source .venv/bin/activate # venv optional
-cd scripts
-pip3 install -r requirements.txt
-python3 process.py
-```
-Open `index.html` from the project root in your browser.
+### Running without a web server
+It may be possible to run the visualizations without a web server, but due to issues with CORS and local files, this is not supported.
 
 ## Dataset Used
 We are interested in using data from AirBnB scraped from the web and compiled on the InsideAirBnB website[1], specifically focusing on the Chicago listings data[2]. We might also supplement the listings data with other information from the Chicago InsideAirBnB data to cross-reference neighborhoods to geolocation data[3] if necessary in order to draw some types of map-oriented visualizations.
